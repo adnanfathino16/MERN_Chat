@@ -11,7 +11,14 @@ import User from "./app/models/userModel.js";
 import Message from "./app/models/messageModel.js";
 
 dotenv.config();
-mongoose.connect(process.env.MONGO_URL);
+mongoose
+  .connect(process.env.MONGO_URL)
+  .then(() => {
+    console.log("Connected to DB");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 const jwtSecret = process.env.JWT_SECRET;
 const bcryptSalt = bcrypt.genSaltSync(10);
 
@@ -22,7 +29,6 @@ app.use(cookieParser());
 app.use(
   cors({
     credentials: true,
-    origin: process.env.CLIENT_URL,
   })
 );
 
@@ -109,7 +115,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-const server = app.listen(8000);
+const server = app.listen(8000, "0.0.0.0", () => console.log(`Server is running on port 8000`));
 
 const wss = new WebSocketServer({ server });
 wss.on("connection", (connection, req) => {
